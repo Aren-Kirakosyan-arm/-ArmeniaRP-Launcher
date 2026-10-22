@@ -3,39 +3,25 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#080b12" />
+  <meta name="theme-color" content="#070910" />
   <meta name="description" content="ArmeniaRP — հայկական RolePlay-ի պաշտոնական launcher-ը" />
-  <title>ArmeniaRP Launcher</title>
+  <title>ArmeniaRP — Լաունչեր</title>
   <link rel="stylesheet" href="/src/styles.css" />
 </head>
 <body>
   <div class="noise"></div>
-  <div class="ambient ambient-red"></div>
-  <div class="ambient ambient-blue"></div>
-  <div class="ambient ambient-orange"></div>
-
+  <div class="ambient ambient-red"></div><div class="ambient ambient-blue"></div><div class="ambient ambient-orange"></div>
   <main id="app" class="shell">
     <header class="topbar">
       <a class="brand" href="#" aria-label="ArmeniaRP">
         <span class="logo-wrap">
           <svg class="armenia-logo" viewBox="0 0 80 80" role="img" aria-label="ArmeniaRP logo">
-            <defs>
-              <linearGradient id="logoBg" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0" stop-color="#151b28" />
-                <stop offset="1" stop-color="#080b12" />
-              </linearGradient>
-              <clipPath id="logoShield">
-                <path d="M40 5 67 15v22c0 18-10 30-27 38C23 67 13 55 13 37V15Z" />
-              </clipPath>
-            </defs>
-            <circle cx="40" cy="40" r="38" fill="url(#logoBg)" stroke="rgba(255,255,255,.14)" />
-            <g clip-path="url(#logoShield)">
-              <rect x="10" y="5" width="60" height="24" fill="#d90012" />
-              <rect x="10" y="29" width="60" height="23" fill="#0033a0" />
-              <rect x="10" y="52" width="60" height="25" fill="#f2a800" />
-            </g>
-            <path d="M40 5 67 15v22c0 18-10 30-27 38C23 67 13 55 13 37V15Z" fill="none" stroke="#fff" stroke-opacity=".2" stroke-width="2" />
-            <path d="M30 42h20M40 32v20" stroke="#fff" stroke-width="4" stroke-linecap="round" opacity=".9" />
+            <defs><linearGradient id="logoBg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#18233a"/><stop offset="1" stop-color="#080b12"/></linearGradient><linearGradient id="logoGold" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffe08a"/><stop offset="1" stop-color="#d99524"/></linearGradient><clipPath id="shield"><path d="M40 5 67 15v22c0 18-10 30-27 38C23 67 13 55 13 37V15Z"/></clipPath></defs>
+            <circle cx="40" cy="40" r="38" fill="url(#logoBg)" stroke="rgba(255,255,255,.15)"/>
+            <g clip-path="url(#shield)"><rect x="10" y="5" width="60" height="24" fill="#d90012"/><rect x="10" y="29" width="60" height="23" fill="#0033a0"/><rect x="10" y="52" width="60" height="25" fill="#f2a800"/></g>
+            <path d="M40 5 67 15v22c0 18-10 30-27 38C23 67 13 55 13 37V15Z" fill="none" stroke="#fff" stroke-opacity=".2" stroke-width="2"/>
+            <path d="M29 43h22M40 32v22" stroke="#fff" stroke-width="4" stroke-linecap="round" opacity=".92"/>
+            <circle cx="40" cy="32" r="3" fill="url(#logoGold)"/>
           </svg>
         </span>
         <span class="brand-copy"><strong>ARMENIA<span>RP</span></strong><small>ՊԱՇՏՈՆԱԿԱՆ LAUNCHER</small></span>
@@ -47,30 +33,18 @@
       <div class="hero-copy">
         <div class="hero-kicker"><span></span> ՀԱՅԱՍՏԱՆ · ROLEPLAY <span></span></div>
         <h1>Քո քաղաքը։<br><span>Քո պատմությունը։</span></h1>
-        <p class="subtitle">Մուտք գործիր ArmeniaRP-ի աշխարհ, ստեղծիր քո պատմությունը և դարձիր Հայաստանի ամենամեծ RolePlay համայնքի մի մասը։</p>
+        <p class="subtitle">Մուտք գործիր ArmeniaRP-ի աշխարհ, ստեղծիր քո կերպարը և սկսիր քո սեփական պատմությունը Հայաստանում։</p>
         <div class="hero-actions">
-          <label class="nickname-field">
-            <span>ՔՈ ՄԱԿԱՆՈՒՆԸ</span>
-            <input id="nickname" class="nickname-input" maxlength="24" placeholder="Մուտքագրեք Ձեր մականունը" autocomplete="nickname" />
-          </label>
+          <label class="nickname-field"><span>ՔՈ ՄԱԿԱՆՈՒՆԸ</span><input id="nickname" class="nickname-input" maxlength="24" placeholder="Մուտքագրեք Ձեր մականունը" autocomplete="nickname" /></label>
           <button id="play-button" class="play-button"><span class="play-icon">▶</span> ԽԱՂԱԼ</button>
         </div>
         <p id="message" class="message" role="status"></p>
       </div>
 
       <div class="server-card glass">
-        <div class="server-card-top">
-          <div><p class="card-label">ARMENIARP SERVER</p><h2>Սերվերի կարգավիճակ</h2></div>
-          <div class="arm-flag" aria-label="Հայաստանի դրոշ"><i></i><i></i><i></i></div>
-        </div>
-        <div class="server-status-row">
-          <div class="pulse"><i></i></div>
-          <strong id="server-status" data-state="offline">ՍԵՐՎԵՐԸ ԱՆՀԱՍԱՆԵԼԻ Է</strong>
-        </div>
-        <div class="server-stats">
-          <div><span>Խաղացողներ</span><b id="player-count">—</b></div>
-          <div><span>Ping</span><b id="latency">—</b></div>
-        </div>
+        <div class="server-card-top"><div><p class="card-label">ARMENIARP SERVER</p><h2>Սերվերի կարգավիճակ</h2></div><div class="arm-flag" aria-label="Հայաստանի դրոշ"><i></i><i></i><i></i></div></div>
+        <div class="server-status-row"><div class="pulse"><i></i></div><strong id="server-status" data-state="offline">ՍԵՐՎԵՐԸ ԱՆՀԱՍԱՆԵԼԻ Է</strong></div>
+        <div class="server-stats"><div><span>ԽԱՂԱՑՈՂՆԵՐ</span><b id="player-count">—</b></div><div><span>PING</span><b id="latency">—</b></div></div>
         <div class="server-address"><span>ՍԵՐՎԵՐ</span><b id="server-address">127.0.0.1:7777</b></div>
       </div>
     </section>
@@ -79,7 +53,6 @@
       <div class="section-heading"><div><p class="eyebrow">ՎԵՐՋԻՆ ՆՈՐՈՒԹՅՈՒՆՆԵՐ</p><h2>ArmeniaRP-ի նորությունները</h2></div><button id="refresh-button" class="text-button">Թարմացնել <span>↻</span></button></div>
       <div id="news-list" class="news-grid"></div>
     </section>
-
     <footer class="footer"><span>© 2026 ArmeniaRP · Բոլոր իրավունքները պաշտպանված են</span><span>Windows · Tauri 2 · v0.1.0</span></footer>
   </main>
 
@@ -88,11 +61,10 @@
       <div class="section-heading"><div><p class="eyebrow">ԿԱՐԳԱՎՈՐՈՒՄՆԵՐ</p><h2>Կարգավորումներ</h2></div><button class="icon-button" value="cancel" aria-label="Փակել">×</button></div>
       <label>Մականուն<input id="settings-nickname" maxlength="24" placeholder="Ձեր մականունը" /></label>
       <label>Խաղի ճանապարհը (.exe)<input id="game-path" placeholder="C:\\Games\\ArmeniaRP\\gta_sa.exe" /></label>
-      <p class="hint">Ընտրեք խաղի .exe ֆայլը։ Հետագայում այստեղ կավելացվեն ավտոմատ թարմացումները, սերվերի տվյալները և գործարկման լրացուցիչ կարգավորումները։</p>
+      <p class="hint">Ընտրեք խաղի .exe ֆայլը։ Պահպանեք կարգավորումները և սեղմեք «ԽԱՂԱԼ»։</p>
       <div class="settings-actions"><button class="secondary-button" value="cancel">Չեղարկել</button><button id="save-settings" class="play-button" value="default">Պահպանել</button></div>
     </form>
   </dialog>
-
   <script type="module" src="/src/main.ts"></script>
 </body>
 </html>
