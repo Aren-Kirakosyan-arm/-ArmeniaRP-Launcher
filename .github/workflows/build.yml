@@ -1,0 +1,213 @@
+name: Build ArmeniaRP Launcher
+
+permissions:
+  contents: write
+
+on:
+  push:
+    branches:
+      - main
+      - 'feature/**'
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  frontend:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install frontend dependencies
+        run: npm install
+
+      - name: Frontend tests
+        run: npm test
+
+      - name: Typecheck and build
+        run: npm run build
+
+      - name: Upload frontend bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: armeniarp-frontend
+          path: dist
+          if-no-files-found: error
+
+  windows-build:
+    needs: frontend
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install Tauri CLI
+        run: npm install
+
+      - name: Download frontend bundle
+        uses: actions/download-artifact@v4
+        with:
+          name: armeniarp-frontend
+          path: dist
+
+      - name: Generate valid Tauri icons
+        shell: pwsh
+        run: |
+          $svg = @'
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+            <defs>
+              <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stop-color="#111827"/>
+                <stop offset="1" stop-color="#0b1220"/>
+              </linearGradient>
+              <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stop-color="#f5d77a"/>
+                <stop offset="1" stop-color="#b8871d"/>
+              </linearGradient>
+            </defs>
+
+            <rect width="256" height="256" rx="56" fill="url(#bg)"/>
+
+            <circle
+              cx="128"
+              cy="128"
+              r="82"
+              fill="none"
+              stroke="url(#gold)"
+              stroke-width="18"
+            />
+
+            <circle
+              cx="128"
+              cy="128"
+              r="34"
+              fill="url(#gold)"
+            />
+
+            <path
+              d="M128 28v34M128 194v34M28 128h34M194 128h34"
+              stroke="#e8edf5"
+              stroke-width="10"
+              stroke-linecap="round"
+              opacity=".85"
+            />
+          </svg>
+          '@
+
+          New-Item -ItemType Directory -Force src-tauri | Out-Null
+
+          Set-Content `
+            -Path src-tauri/armeniarp.svg `
+            -Value $svg `
+            -Encoding UTF8
+
+          npx tauri icon src-tauri/armeniarp.svg -o src-tauri/icons
+
+          if (!(Test-Path "src-tauri/icons/icon.ico")) {
+            throw "Tauri icon generation did not create icon.ico"
+          }
+
+          Write-Host "Generated Tauri icons:"
+          Get-ChildItem src-tauri/icons | Select-Object Name, Length
+
+      - name: Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: x86_64-pc-windows-msvc
+
+      - name: Rust cache
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri
+
+      - name: Tauri build
+        shell: pwsh
+        run: |
+          $attempts = 2
+
+          for ($i = 1; $i -le $attempts; $i++) {
+            Write-Host "Tauri build attempt $i/$attempts"
+
+            npm run tauri build
+
+            if ($LASTEXITCODE -eq 0) {
+              exit 0
+            }
+
+            if ($i -lt $attempts) {
+              Write-Warning "Tauri build failed; retrying once using the cached Rust build."
+            }
+          }
+
+          exit 1
+
+      - name: Upload Windows installers
+        uses: actions/upload-artifact@v4
+        with:
+          name: armeniarp-launcher-windows
+          path: |
+            src-tauri/target/release/bundle/nsis/*.exe
+            src-tauri/target/release/bundle/msi/*.msi
+          if-no-files-found: error
+
+  release:
+    needs: windows-build
+
+    # Release создаётся только после push в main.
+    # Поэтому после Merge Pull Request сборка создаст Release автоматически.
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download Windows installers
+        uses: actions/download-artifact@v4
+        with:
+          name: armeniarp-launcher-windows
+          path: release
+
+      - name: Show downloaded files
+        shell: bash
+        run: |
+          echo "Downloaded installers:"
+          find release -type f -maxdepth 5 -print
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v0.1.0
+          name: ArmeniaRP Launcher v0.1.0
+          body: |
+            # ArmeniaRP Launcher v0.1.0
+
+            Первый публичный релиз ArmeniaRP Launcher.
+
+            ## Windows
+
+            Установщик для Windows x64:
+
+            - ArmeniaRP Launcher Setup (.exe)
+            - MSI Installer (.msi)
+
+            ## Версия
+
+            v0.1.0
+          files: |
+            release/**/*.exe
+            release/**/*.msi
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
