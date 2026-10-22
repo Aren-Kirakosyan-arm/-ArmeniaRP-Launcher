@@ -1,52 +1,51 @@
-# ArmeniaRP Launcher
+# ArmeniaRP Launcher 🇦🇲
 
-Windows desktop launcher for ArmeniaRP, built with Tauri 2, Rust and Vanilla TypeScript.
+Native Windows launcher for ArmeniaRP with a fully Armenian interface.
 
-## Current v0.1 foundation
+## Technology
 
-- Premium dark ArmeniaRP interface
-- Online/offline server state
-- Player count and latency
+- C# / .NET 8
+- WPF
+- Windows x64
+- Inno Setup installer
+- HTTP API for server status and news
+
+## Included in v0.1
+
+- Premium dark ArmeniaRP UI
+- Armenian interface and messages
+- Server online/offline status
+- Player count
 - Nickname persistence
-- News API with local fallback
-- Settings modal
-- Safe executable-path validation in Rust
-- Updater manifest/version-comparison foundation
-- Windows CI and Tauri packaging workflow
+- Game `.exe` selection
+- Guarded Play action
+- News API integration with safe fallback
+- Self-contained Windows x64 publish
+- `ArmeniaRP-Launcher-Setup.exe` installer through GitHub Actions
 
-## Local setup
+## API
 
-Install Node.js 20+, Rust stable, Microsoft C++ Build Tools and WebView2 on Windows.
-
-```bash
-npm install
-npm run dev
-```
-
-For a Windows desktop build:
-
-```bash
-npm run tauri build
-```
-
-## Production configuration
-
-Update `src/config.ts` with the real API URL and server host/port. The launcher intentionally ships with placeholders until ArmeniaRP infrastructure is provided.
-
-Expected API endpoints:
+The launcher expects:
 
 - `GET /api/server/status`
 - `GET /api/news`
 
-## Game launch
+The current API base is `http://localhost:8080` and the game server display is `127.0.0.1:7777`. These are placeholders until the real ArmeniaRP infrastructure is supplied.
 
-Open Settings and select the real game executable. The Rust backend rejects relative paths, missing files, non-`.exe` files and empty nicknames before launching.
+## Production game launch
 
-The exact GTA/SA-MP/open.mp executable and command-line arguments still need to be confirmed for production.
+The exact GTA/SA-MP/open.mp executable and command-line format still need to be confirmed. The launcher deliberately asks the player to select an `.exe` instead of pretending a production game path is known.
+
+## Build
+
+GitHub Actions uses Windows, .NET 8 and Inno Setup to create a self-contained x64 launcher and package it as `ArmeniaRP-Launcher-Setup.exe`.
+
+The generated installer is uploaded as the `ArmeniaRP-Launcher-Setup` workflow artifact.
 
 ## Roadmap
 
-- v0.2: real server API
-- v0.3: automatic updater downloads + SHA-256 verification
-- v0.4: authentication/profile
-- v0.5: game directory detection and social links
+- v0.2: automatic updater with SHA-256 verification
+- v0.3: real ArmeniaRP API and production server configuration
+- v0.4: authentication and player profile
+- v0.5: GTA/SA-MP/open.mp auto-detection and correct launch arguments
+- v0.6: Discord/Telegram integration and launcher settings
