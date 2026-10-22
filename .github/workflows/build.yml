@@ -61,25 +61,29 @@ jobs:
           name: armeniarp-frontend
           path: dist
 
-      - name: Generate valid Tauri icons
+      - name: Generate Armenian Tauri icons
         shell: pwsh
         run: |
           $svg = @'
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
             <defs>
               <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0" stop-color="#111827"/>
-                <stop offset="1" stop-color="#0b1220"/>
+                <stop offset="0" stop-color="#151b28"/>
+                <stop offset="1" stop-color="#070910"/>
               </linearGradient>
-              <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0" stop-color="#f5d77a"/>
-                <stop offset="1" stop-color="#b8871d"/>
-              </linearGradient>
+              <clipPath id="shield">
+                <path d="M128 22 211 53v67c0 56-31 92-83 114-52-22-83-58-83-114V53Z"/>
+              </clipPath>
             </defs>
-            <rect width="256" height="256" rx="56" fill="url(#bg)"/>
-            <circle cx="128" cy="128" r="82" fill="none" stroke="url(#gold)" stroke-width="18"/>
-            <circle cx="128" cy="128" r="34" fill="url(#gold)"/>
-            <path d="M128 28v34M128 194v34M28 128h34M194 128h34" stroke="#e8edf5" stroke-width="10" stroke-linecap="round" opacity=".85"/>
+            <rect width="256" height="256" rx="58" fill="url(#bg)"/>
+            <g clip-path="url(#shield)">
+              <rect x="40" y="22" width="176" height="71" fill="#d90012"/>
+              <rect x="40" y="93" width="176" height="70" fill="#0033a0"/>
+              <rect x="40" y="163" width="176" height="71" fill="#f2a800"/>
+            </g>
+            <path d="M128 22 211 53v67c0 56-31 92-83 114-52-22-83-58-83-114V53Z" fill="none" stroke="#fff" stroke-opacity=".25" stroke-width="5"/>
+            <circle cx="128" cy="128" r="36" fill="#070910" fill-opacity=".72"/>
+            <path d="M108 128h40M128 108v40" stroke="#fff" stroke-width="9" stroke-linecap="round" opacity=".95"/>
           </svg>
           '@
 
@@ -91,7 +95,7 @@ jobs:
             throw "Tauri icon generation did not create icon.ico"
           }
 
-          Write-Host "Generated Tauri icons:"
+          Write-Host "Generated Armenian Tauri icons:"
           Get-ChildItem src-tauri/icons | Select-Object Name, Length
 
       - name: Rust toolchain
@@ -151,11 +155,16 @@ jobs:
           body: |
             # ArmeniaRP Launcher v0.1.0
 
-            Первый публичный релиз ArmeniaRP Launcher.
+            🇦🇲 Պաշտոնական ArmeniaRP Launcher-ի առաջին հանրային թողարկումը։
 
             ## Windows
             - ArmeniaRP Launcher x64 Setup
             - MSI Installer
+
+            ## Նոր դիզայն
+            - Հայերեն ինտերֆեյս
+            - Հայաստանի եռագույնով բրենդավորում
+            - Նոր լոգո և premium dark UI
           files: |
             release/**/*.exe
             release/**/*.msi
