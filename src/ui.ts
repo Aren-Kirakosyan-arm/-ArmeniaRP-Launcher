@@ -14,14 +14,14 @@ export function renderServerStatus(status: ServerStatus | null): void {
   if (!badge || !players || !latency) return;
 
   if (!status) {
-    badge.textContent = 'UNAVAILABLE';
+    badge.textContent = 'ՍԵՐՎԵՐԸ ԱՆՀԱՍԱՆԵԼԻ Է';
     badge.dataset.state = 'offline';
     players.textContent = '—';
-    latency.textContent = 'Нет соединения';
+    latency.textContent = 'Կապ չկա';
     return;
   }
 
-  badge.textContent = status.online ? 'ONLINE' : 'OFFLINE';
+  badge.textContent = status.online ? 'ՍԵՐՎԵՐԸ ԱՌՑԱՆՑ Է' : 'ՍԵՐՎԵՐԸ ՕՖԼԱՅՆ Է';
   badge.dataset.state = status.online ? 'online' : 'offline';
   players.textContent = `${status.players} / ${status.maxPlayers}`;
   latency.textContent = status.latencyMs == null ? '—' : `${status.latencyMs} ms`;
