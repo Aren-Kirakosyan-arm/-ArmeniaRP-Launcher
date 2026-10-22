@@ -7,98 +7,204 @@ on:
     branches: [main]
 
 jobs:
-  frontend:
+  build-wpf-installer:
     runs-on: windows-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-      - name: Install frontend dependencies
-        run: npm install
-      - name: Frontend tests
-        run: npm test
-      - name: Typecheck and build
-        run: npm run build
-      - name: Upload frontend bundle
-        uses: actions/upload-artifact@v4
-        with:
-          name: armeniarp-frontend
-          path: dist
-          if-no-files-found: error
 
-  windows-build:
-    needs: frontend
-    runs-on: windows-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Setup Node
-        uses: actions/setup-node@v4
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@v4
         with:
-          node-version: 22
-      - name: Install Tauri CLI
-        run: npm install
-      - name: Download frontend bundle
-        uses: actions/download-artifact@v4
-        with:
-          name: armeniarp-frontend
-          path: dist
-      - name: Generate valid Tauri icons
+          dotnet-version: 8.0.x
+
+      - name: Create native Armenian WPF project
         shell: pwsh
         run: |
-          $svg = @'
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
-            <defs>
-              <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0" stop-color="#111827"/>
-                <stop offset="1" stop-color="#0b1220"/>
-              </linearGradient>
-              <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0" stop-color="#f5d77a"/>
-                <stop offset="1" stop-color="#b8871d"/>
-              </linearGradient>
-            </defs>
-            <rect width="256" height="256" rx="56" fill="url(#bg)"/>
-            <circle cx="128" cy="128" r="82" fill="none" stroke="url(#gold)" stroke-width="18"/>
-            <circle cx="128" cy="128" r="34" fill="url(#gold)"/>
-            <path d="M128 28v34M128 194v34M28 128h34M194 128h34" stroke="#e8edf5" stroke-width="10" stroke-linecap="round" opacity=".85"/>
-          </svg>
+          $ErrorActionPreference = 'Stop'
+          if (Test-Path wpf) { Remove-Item wpf -Recurse -Force }
+          dotnet new wpf -n ArmeniaRP.Launcher -o wpf/ArmeniaRP.Launcher --framework net8.0-windows
+          $project = @'
+          <Project Sdk="Microsoft.NET.Sdk">
+            <PropertyGroup>
+              <OutputType>WinExe</OutputType>
+              <TargetFramework>net8.0-windows</TargetFramework>
+              <UseWPF>true</UseWPF>
+              <Nullable>enable</Nullable>
+              <ImplicitUsings>enable</ImplicitUsings>
+              <AssemblyName>ArmeniaRP.Launcher</AssemblyName>
+              <RootNamespace>ArmeniaRP.Launcher</RootNamespace>
+              <ApplicationManifest>app.manifest</ApplicationManifest>
+            </PropertyGroup>
+          </Project>
           '@
-          New-Item -ItemType Directory -Force src-tauri | Out-Null
-          Set-Content -Path src-tauri/armeniarp.svg -Value $svg -Encoding UTF8
-          npx tauri icon src-tauri/armeniarp.svg -o src-tauri/icons
-          if (!(Test-Path "src-tauri/icons/icon.ico")) { throw "Tauri icon generation did not create icon.ico" }
-          Write-Host "Generated Tauri icons:"
-          Get-ChildItem src-tauri/icons | Select-Object Name, Length
-      - name: Rust toolchain
-        uses: dtolnay/rust-toolchain@stable
-        with:
-          targets: x86_64-pc-windows-msvc
-      - name: Rust cache
-        uses: swatinem/rust-cache@v2
-        with:
-          workspaces: src-tauri
-      - name: Tauri build
-        shell: pwsh
-        run: |
-          $attempts = 2
-          for ($i = 1; $i -le $attempts; $i++) {
-            Write-Host "Tauri build attempt $i/$attempts"
-            npm run tauri build
-            if ($LASTEXITCODE -eq 0) { exit 0 }
-            if ($i -lt $attempts) {
-              Write-Warning "Tauri build failed; retrying once using the cached Rust build."
+          Set-Content wpf/ArmeniaRP.Launcher/ArmeniaRP.Launcher.csproj $project -Encoding UTF8
+
+          $app = @'
+          <Application x:Class="ArmeniaRP.Launcher.App" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" StartupUri="MainWindow.xaml">
+            <Application.Resources/>
+          </Application>
+          '@
+          Set-Content wpf/ArmeniaRP.Launcher/App.xaml $app -Encoding UTF8
+
+          $appcs = @'
+          using System.Windows;
+          namespace ArmeniaRP.Launcher;
+          public partial class App : Application { }
+          '@
+          Set-Content wpf/ArmeniaRP.Launcher/App.xaml.cs $appcs -Encoding UTF8
+
+          $xaml = @'
+          <Window x:Class="ArmeniaRP.Launcher.MainWindow" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="ArmeniaRP" Width="1180" Height="760" MinWidth="900" MinHeight="620" WindowStartupLocation="CenterScreen" Background="#07101C" Foreground="#F5F7FA" FontFamily="Segoe UI">
+            <Grid Margin="28">
+              <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+              <DockPanel Grid.Row="0" Margin="0,0,0,24">
+                <StackPanel DockPanel.Dock="Left"><TextBlock Text="ARMENIA RP" FontSize="30" FontWeight="Bold" Foreground="#F5C451"/><TextBlock Text="Հայկական RolePlay սերվեր" FontSize="14" Foreground="#91A0B5" Margin="2,3,0,0"/></StackPanel>
+                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center"><TextBlock Text="v0.1.0" Foreground="#91A0B5" VerticalAlignment="Center" Margin="0,0,16,0"/><Button x:Name="SettingsButton" Content="⚙ ԿԱՐԳԱՎՈՐՈՒՄՆԵՐ" Padding="16,9" Click="SettingsButton_Click"/></StackPanel>
+              </DockPanel>
+              <Grid Grid.Row="1">
+                <Grid.ColumnDefinitions><ColumnDefinition Width="2.1*"/><ColumnDefinition Width="1*"/></Grid.ColumnDefinitions>
+                <Border Grid.Column="0" CornerRadius="24" Background="#0D1928" Padding="34" Margin="0,0,18,0" BorderBrush="#1E3046" BorderThickness="1">
+                  <Grid>
+                    <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+                    <StackPanel><TextBlock Text="ԲԱՐԻ ԳԱԼՈՒՍՏ ARMENIA RP" FontSize="16" Foreground="#91A0B5"/><TextBlock Text="Մուտք գործիր խաղի աշխարհ" FontSize="38" FontWeight="Bold" Margin="0,8,0,0"/></StackPanel>
+                    <StackPanel Grid.Row="1" VerticalAlignment="Center">
+                      <TextBlock Text="ՄԱԿԱՆՈՒՆ" FontSize="12" Foreground="#91A0B5" Margin="0,0,0,7"/><TextBox x:Name="NicknameBox" FontSize="18" Padding="14,10" Background="#111F31" Foreground="#F5F7FA" BorderBrush="#29405A"/>
+                      <TextBlock Text="ՍԵՐՎԵՐ" FontSize="12" Foreground="#91A0B5" Margin="0,24,0,7"/><TextBlock x:Name="ServerAddress" Text="127.0.0.1:7777" FontSize="20" FontWeight="SemiBold"/>
+                    </StackPanel>
+                    <Button Grid.Row="2" x:Name="PlayButton" Content="▶  ԽԱՂԱԼ" FontSize="20" FontWeight="Bold" Padding="28,17" Background="#C9982D" Foreground="#08111D" BorderThickness="0" Click="PlayButton_Click"/>
+                  </Grid>
+                </Border>
+                <StackPanel Grid.Column="1">
+                  <Border CornerRadius="20" Background="#0D1928" Padding="24" BorderBrush="#1E3046" BorderThickness="1">
+                    <StackPanel><TextBlock Text="ՍԵՐՎԵՐԻ ԿԱՐԳԱՎԻՃԱԿ" FontSize="13" Foreground="#91A0B5"/><StackPanel Orientation="Horizontal" Margin="0,10,0,0"><Ellipse x:Name="StatusDot" Width="12" Height="12" Fill="#E34B4B" Margin="0,0,9,0"/><TextBlock x:Name="StatusText" Text="Ստուգվում է..." FontSize="20" FontWeight="SemiBold"/></StackPanel><TextBlock x:Name="PlayersText" Text="Խաղացողներ՝ —" FontSize="15" Foreground="#91A0B5" Margin="0,10,0,0"/><Button Content="↻ ԹԱՐՄԱՑՆԵԼ" Margin="0,18,0,0" Padding="12,9" Click="RefreshButton_Click"/></StackPanel>
+                  </Border>
+                  <Border CornerRadius="20" Background="#0D1928" Padding="24" Margin="0,18,0,0" BorderBrush="#1E3046" BorderThickness="1"><StackPanel><TextBlock Text="ՎԵՐՋԻՆ ՆՈՐՈՒԹՅՈՒՆՆԵՐ" FontSize="13" Foreground="#91A0B5"/><TextBlock x:Name="NewsTitle" Text="Բարի գալուստ ArmeniaRP" FontSize="19" FontWeight="SemiBold" Margin="0,14,0,5" TextWrapping="Wrap"/><TextBlock x:Name="NewsSummary" Text="Launcher-ը պատրաստ է միանալ սերվերին։" Foreground="#91A0B5" TextWrapping="Wrap"/></StackPanel></Border>
+                </StackPanel>
+              </Grid>
+              <TextBlock Grid.Row="2" Text="© ArmeniaRP • Windows Launcher • Հայերեն ինտերֆեյս" Foreground="#53657A" Margin="2,18,0,0"/>
+            </Grid>
+          </Window>
+          '@
+          Set-Content wpf/ArmeniaRP.Launcher/MainWindow.xaml $xaml -Encoding UTF8
+
+          $code = @'
+          using System.Diagnostics;
+          using System.Net.Http;
+          using System.Text.Json;
+          using System.Windows;
+          using System.Windows.Media;
+          using Microsoft.Win32;
+          namespace ArmeniaRP.Launcher;
+          public partial class MainWindow : Window
+          {
+            private readonly HttpClient http = new() { Timeout = TimeSpan.FromSeconds(5) };
+            private const string ApiBase = "http://localhost:8080";
+            private string? gamePath;
+            public MainWindow() { InitializeComponent(); NicknameBox.Text = Properties.Settings.Default.Nickname; gamePath = Properties.Settings.Default.GamePath; Loaded += async (_,__) => await RefreshAsync(); }
+            private async Task RefreshAsync()
+            {
+              try { var json = await http.GetStringAsync(ApiBase + "/api/server/status"); using var doc = JsonDocument.Parse(json); var root = doc.RootElement; var online = root.GetProperty("online").GetBoolean(); var players = root.GetProperty("players").GetInt32(); var max = root.GetProperty("maxPlayers").GetInt32(); StatusDot.Fill = new SolidColorBrush((Color)ColorConverter.ConvertFromString(online ? "#35D07F" : "#E34B4B")); StatusText.Text = online ? "ՕՆԼԱՅՆ" : "ՕՖԼԱՅՆ"; PlayersText.Text = $"Խաղացողներ՝ {players} / {max}"; }
+              catch { StatusDot.Fill = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#E34B4B")); StatusText.Text = "ՕՖԼԱՅՆ / ՉՀԱՍԱՆԵԼԻ"; PlayersText.Text = "Սերվերի տվյալները հասանելի չեն"; }
+              try { var json = await http.GetStringAsync(ApiBase + "/api/news"); using var doc = JsonDocument.Parse(json); var item = doc.RootElement.EnumerateArray().FirstOrDefault(); if (item.ValueKind != JsonValueKind.Undefined) { NewsTitle.Text = item.GetProperty("title").GetString() ?? "Նորություն"; NewsSummary.Text = item.GetProperty("summary").GetString() ?? ""; } } catch { }
+            }
+            private async void RefreshButton_Click(object sender, RoutedEventArgs e) => await RefreshAsync();
+            private void SettingsButton_Click(object sender, RoutedEventArgs e) { var dialog = new OpenFileDialog { Title = "Ընտրեք խաղի EXE ֆայլը", Filter = "EXE files (*.exe)|*.exe" }; if (dialog.ShowDialog() == true) { gamePath = dialog.FileName; Properties.Settings.Default.GamePath = gamePath; Properties.Settings.Default.Save(); MessageBox.Show("Խաղի ուղին պահպանվեց։", "Կարգավորումներ", MessageBoxButton.OK, MessageBoxImage.Information); } }
+            private void PlayButton_Click(object sender, RoutedEventArgs e)
+            {
+              var nick = NicknameBox.Text.Trim(); if (nick.Length < 3 || nick.Length > 24) { MessageBox.Show("Մականունը պետք է լինի 3-24 նիշ։", "Սխալ", MessageBoxButton.OK, MessageBoxImage.Warning); return; }
+              Properties.Settings.Default.Nickname = nick; Properties.Settings.Default.Save();
+              if (string.IsNullOrWhiteSpace(gamePath) || !File.Exists(gamePath)) { SettingsButton_Click(sender,e); if (string.IsNullOrWhiteSpace(gamePath) || !File.Exists(gamePath)) return; }
+              try { Process.Start(new ProcessStartInfo { FileName = gamePath, UseShellExecute = true, Arguments = $"nickname={nick}" }); } catch (Exception ex) { MessageBox.Show("Խաղը չհաջողվեց գործարկել։\n\n" + ex.Message, "Սխալ", MessageBoxButton.OK, MessageBoxImage.Error); }
             }
           }
-          exit 1
-      - name: Upload Windows installers
+          '@
+          Set-Content wpf/ArmeniaRP.Launcher/MainWindow.xaml.cs $code -Encoding UTF8
+
+          $settings = @'
+          namespace ArmeniaRP.Launcher.Properties;
+          [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "17.0.0.0")]
+          internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase
+          {
+            private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
+            public static Settings Default => defaultInstance;
+            [global::System.Configuration.UserScopedSettingAttribute()]
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.Configuration.DefaultSettingValueAttribute("")]
+            public string Nickname { get => ((string)this["Nickname"]); set => this["Nickname"] = value; }
+            [global::System.Configuration.UserScopedSettingAttribute()]
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.Configuration.DefaultSettingValueAttribute("")]
+            public string GamePath { get => ((string)this["GamePath"]); set => this["GamePath"] = value; }
+          }
+          '@
+          New-Item -ItemType Directory -Force wpf/ArmeniaRP.Launcher/Properties | Out-Null
+          Set-Content wpf/ArmeniaRP.Launcher/Properties/Settings.cs $settings -Encoding UTF8
+          $manifest = @'
+          <?xml version="1.0" encoding="utf-8"?><assembly manifestVersion="1.0" xmlns="urn:schemas-microsoft-com:asm.v1"><assemblyIdentity version="1.0.0.0" name="ArmeniaRP.Launcher"/><trustInfo xmlns="urn:schemas-microsoft-com:asm.v3"><security><requestedPrivileges><requestedExecutionLevel level="asInvoker" uiAccess="false"/></requestedPrivileges></security></trustInfo></assembly>
+          '@
+          Set-Content wpf/ArmeniaRP.Launcher/app.manifest $manifest -Encoding UTF8
+          $global = @'
+          <Project>
+            <PropertyGroup>
+              <ApplicationManifest>app.manifest</ApplicationManifest>
+            </PropertyGroup>
+          </Project>
+          '@
+          Set-Content wpf/ArmeniaRP.Launcher/Directory.Build.props $global -Encoding UTF8
+
+      - name: Publish Windows x64
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          dotnet publish wpf/ArmeniaRP.Launcher/ArmeniaRP.Launcher.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -o publish
+          if (!(Test-Path publish/ArmeniaRP.Launcher.exe)) { throw 'Launcher EXE was not produced.' }
+
+      - name: Install Inno Setup
+        shell: pwsh
+        run: choco install innosetup -y --no-progress
+
+      - name: Create Setup.exe
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $iss = @'
+          #define MyAppName "ArmeniaRP Launcher"
+          #define MyAppVersion "0.1.0"
+          #define MyAppPublisher "ArmeniaRP"
+          #define MyAppExeName "ArmeniaRP.Launcher.exe"
+          [Setup]
+          AppId={{A9A7E8A5-6F90-4F24-A2E2-ARMENIARP0001}
+          AppName={#MyAppName}
+          AppVersion={#MyAppVersion}
+          AppPublisher={#MyAppPublisher}
+          DefaultDirName={autopf}\ArmeniaRP Launcher
+          DefaultGroupName=ArmeniaRP Launcher
+          OutputDir=installer
+          OutputBaseFilename=ArmeniaRP-Launcher-Setup
+          Compression=lzma2
+          SolidCompression=yes
+          ArchitecturesInstallIn64BitMode=x64
+          UninstallDisplayIcon={app}\{#MyAppExeName}
+          [Files]
+          Source: "publish\ArmeniaRP.Launcher.exe"; DestDir: "{app}"; Flags: ignoreversion
+          [Icons]
+          Name: "{group}\ArmeniaRP Launcher"; Filename: "{app}\{#MyAppExeName}"
+          Name: "{autodesktop}\ArmeniaRP Launcher"; Filename: "{app}\{#MyAppExeName}"
+          [Run]
+          Filename: "{app}\{#MyAppExeName}"; Description: "Գործարկել ArmeniaRP Launcher"; Flags: nowait postinstall skipifsilent
+          '@
+          Set-Content installer.iss $iss -Encoding UTF8
+          $iscc = Get-ChildItem -Path 'C:\Program Files (x86)\Inno Setup *','C:\Program Files\Inno Setup *' -Filter ISCC.exe -Recurse -ErrorAction SilentlyContinue | Select-Object -First 1 -ExpandProperty FullName
+          if (!$iscc) { throw 'ISCC.exe not found.' }
+          & $iscc installer.iss
+          if ($LASTEXITCODE -ne 0) { throw "Inno Setup failed with exit code $LASTEXITCODE" }
+          if (!(Test-Path installer/ArmeniaRP-Launcher-Setup.exe)) { throw 'Setup.exe was not produced.' }
+
+      - name: Upload Setup.exe
         uses: actions/upload-artifact@v4
         with:
-          name: armeniarp-launcher-windows
-          path: |
-            src-tauri/target/release/bundle/nsis/*.exe
-            src-tauri/target/release/bundle/msi/*.msi
+          name: ArmeniaRP-Launcher-Setup
+          path: installer/ArmeniaRP-Launcher-Setup.exe
           if-no-files-found: error
+          retention-days: 30
