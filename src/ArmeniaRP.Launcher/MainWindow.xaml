@@ -1,0 +1,104 @@
+<Window x:Class="ArmeniaRP.Launcher.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="ArmeniaRP Launcher" Width="1180" Height="760" MinWidth="900" MinHeight="620"
+        WindowStartupLocation="CenterScreen" Background="#090D14" Foreground="#F4F7FB">
+    <Window.Resources>
+        <Style TargetType="Button">
+            <Setter Property="Foreground" Value="#F4F7FB" />
+            <Setter Property="Background" Value="#172131" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Padding" Value="18,11" />
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="Cursor" Value="Hand" />
+        </Style>
+        <Style TargetType="TextBox">
+            <Setter Property="Foreground" Value="#F4F7FB" />
+            <Setter Property="Background" Value="#172131" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Padding" Value="12,9" />
+            <Setter Property="FontSize" Value="14" />
+        </Style>
+    </Window.Resources>
+
+    <Grid Margin="28">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="20" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0">
+            <StackPanel Orientation="Horizontal">
+                <Border Width="52" Height="52" CornerRadius="14" Background="#D7A84A">
+                    <TextBlock Text="AR" Foreground="#090D14" FontSize="20" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                </Border>
+                <StackPanel Margin="16,0,0,0" VerticalAlignment="Center">
+                    <TextBlock Text="ARMENIARP" FontSize="24" FontWeight="Bold" />
+                    <TextBlock Text="Խաղի գործարկիչ" Foreground="#91A0B5" FontSize="12" />
+                </StackPanel>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                <TextBlock Text="ԿԱՐԳԱՎԻՃԱԿ՝" Foreground="#91A0B5" Margin="0,0,8,0" VerticalAlignment="Center" />
+                <TextBlock x:Name="StatusText" Text="Ստուգվում է…" Foreground="#D7A84A" FontWeight="Bold" VerticalAlignment="Center" />
+            </StackPanel>
+        </Grid>
+
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*" />
+                <ColumnDefinition Width="24" />
+                <ColumnDefinition Width="1*" />
+            </Grid.ColumnDefinitions>
+
+            <Border Grid.Column="0" CornerRadius="24" Background="#111824" Padding="34">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <TextBlock Text="Բարի գալուստ Հայաստան RP" FontSize="34" FontWeight="Bold" />
+                    <TextBlock Grid.Row="1" Text="Միացեք հայկական RolePlay համայնքին։" Foreground="#91A0B5" FontSize="16" Margin="0,8,0,26" />
+
+                    <StackPanel Grid.Row="2" VerticalAlignment="Center">
+                        <TextBlock Text="ՍԵՐՎԵՐԻ ՎԻՃԱԿ" Foreground="#91A0B5" FontSize="11" FontWeight="Bold" />
+                        <TextBlock x:Name="PlayersText" Text="— / — խաղացող" FontSize="30" FontWeight="Bold" Margin="0,4,0,18" />
+                        <TextBlock Text="Մականուն" Foreground="#91A0B5" FontSize="12" />
+                        <TextBox x:Name="NicknameBox" Width="360" HorizontalAlignment="Left" Margin="0,7,0,18" />
+                        <Button x:Name="PlayButton" Content="▶  ԽԱՂԱԼ" Width="220" HorizontalAlignment="Left" Background="#D7A84A" Foreground="#090D14" FontSize="16" FontWeight="Bold" Click="PlayButton_Click" />
+                    </StackPanel>
+
+                    <TextBlock Grid.Row="3" Text="ArmeniaRP • Windows x64" Foreground="#5F6D80" FontSize="12" />
+                </Grid>
+            </Border>
+
+            <Border Grid.Column="2" CornerRadius="24" Background="#111824" Padding="26">
+                <StackPanel>
+                    <TextBlock Text="ՎԵՐՋԻՆ ՆՈՐՈՒԹՅՈՒՆՆԵՐ" FontSize="15" FontWeight="Bold" />
+                    <Border Height="1" Background="#243044" Margin="0,16,0,4" />
+                    <ItemsControl x:Name="NewsList">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border Background="#172131" CornerRadius="14" Padding="15" Margin="0,8,0,0">
+                                    <StackPanel>
+                                        <TextBlock Text="{Binding Title}" FontWeight="Bold" TextWrapping="Wrap" />
+                                        <TextBlock Text="{Binding Summary}" Foreground="#91A0B5" FontSize="12" Margin="0,5,0,0" TextWrapping="Wrap" />
+                                    </StackPanel>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+
+                    <TextBlock Text="ԿԱՐԳԱՎՈՐՈՒՄՆԵՐ" FontSize="15" FontWeight="Bold" Margin="0,26,0,12" />
+                    <Button Content="⚙  Ընտրել խաղի ֆայլը" Click="SelectGame_Click" />
+                    <TextBlock x:Name="GamePathText" Text="Խաղի ֆայլը դեռ ընտրված չէ" Foreground="#91A0B5" FontSize="11" Margin="0,8,0,0" TextWrapping="Wrap" />
+                </StackPanel>
+            </Border>
+        </Grid>
+
+        <TextBlock Grid.Row="3" Text="v1.0.0 • ArmeniaRP Launcher" Foreground="#5F6D80" FontSize="11" HorizontalAlignment="Right" Margin="0,18,0,0" />
+    </Grid>
+</Window>
