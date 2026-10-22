@@ -4,13 +4,13 @@
 #define MyAppExeName "ArmeniaRP.Launcher.exe"
 
 [Setup]
-AppId={{A6B9D0F0-3A44-4A8C-9E3B-ARMENIARP001}
+AppId={{A6B9D0F0-3A44-4A8C-9E3B-123456789001}
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
 AppPublisher={#MyAppPublisher}
 DefaultDirName={autopf}\ArmeniaRP Launcher
 DefaultGroupName=ArmeniaRP Launcher
-OutputDir=installer-output
+OutputDir=..\installer-output
 OutputBaseFilename=ArmeniaRP-Launcher-Setup
 Compression=lzma2
 SolidCompression=yes
@@ -21,7 +21,7 @@ DisableProgramGroupPage=yes
 UninstallDisplayIcon={app}\{#MyAppExeName}
 
 [Files]
-Source: "publish\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "..\publish\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 
 [Icons]
 Name: "{group}\ArmeniaRP Launcher"; Filename: "{app}\{#MyAppExeName}"
