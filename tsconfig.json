@@ -6,7 +6,9 @@
     "moduleResolution": "Bundler",
     "strict": true,
     "noEmit": true,
-    "lib": ["ES2022", "DOM", "DOM.Iterable"]
+    "skipLibCheck": true,
+    "types": ["node"],
+    "lib": ["ES2024", "DOM", "DOM.Iterable"]
   },
   "include": ["src", "tests", "vite.config.ts"]
 }
