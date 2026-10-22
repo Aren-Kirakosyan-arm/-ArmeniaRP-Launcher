@@ -6,8 +6,8 @@
   "scripts": {
     "dev": "vite --port 1420",
     "build": "tsc && vite build",
-    "test": "vitest run",
-    "test:watch": "vitest",
+    "test": "vitest run --root .",
+    "test:watch": "vitest --root .",
     "tauri": "tauri"
   },
   "dependencies": {
