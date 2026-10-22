@@ -1,0 +1,64 @@
+name: ArmeniaRP WPF Setup
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main, 'feature/**']
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-setup:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Restore
+        run: dotnet restore src/ArmeniaRP.Launcher/ArmeniaRP.Launcher.csproj
+
+      - name: Build
+        run: dotnet build src/ArmeniaRP.Launcher/ArmeniaRP.Launcher.csproj -c Release --no-restore
+
+      - name: Publish self-contained Windows x64
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          dotnet publish src/ArmeniaRP.Launcher/ArmeniaRP.Launcher.csproj `
+            -c Release -r win-x64 --self-contained true `
+            -p:PublishSingleFile=true `
+            -p:IncludeNativeLibrariesForSelfExtract=true `
+            -p:EnableCompressionInSingleFile=true `
+            -o publish
+          if (!(Test-Path 'publish/ArmeniaRP.Launcher.exe')) { throw 'Launcher EXE was not produced.' }
+
+      - name: Install Inno Setup
+        shell: pwsh
+        run: choco install innosetup -y --no-progress
+
+      - name: Build setup.exe
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          New-Item -ItemType Directory -Force -Path installer-output | Out-Null
+          & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" "/Oinstaller-output" "installer\ArmeniaRP-Launcher.iss"
+          if (!(Test-Path 'installer-output/ArmeniaRP-Launcher-Setup.exe')) { throw 'Setup.exe was not produced.' }
+
+      - name: Upload Setup.exe
+        uses: actions/upload-artifact@v4
+        with:
+          name: ArmeniaRP-Launcher-Setup
+          path: installer-output/ArmeniaRP-Launcher-Setup.exe
+          if-no-files-found: error
+
+      - name: Upload portable launcher
+        uses: actions/upload-artifact@v4
+        with:
+          name: ArmeniaRP-Launcher-Portable
+          path: publish/ArmeniaRP.Launcher.exe
+          if-no-files-found: error
