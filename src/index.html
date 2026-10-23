@@ -7,32 +7,85 @@
   <link rel="stylesheet" href="./styles-elite-rp.css">
 </head>
 <body>
-  <div class="launcher">
-    <aside>
-      <div class="brand">ELITE<br><span>RP</span></div>
-      <nav>
-        <a class="active">Գլխավոր</a><a>Սերվեր</a><a>Նորություններ</a><a>Կարգավորումներ</a><a>Աջակցություն</a>
+  <div class="launcher-shell">
+    <aside class="sidebar">
+      <div class="brand-lockup" aria-label="Elite RP">
+        <div class="brand-crown">♛</div>
+        <div class="brand-main">ELITE</div>
+        <div class="brand-rp"><span>RP</span></div>
+      </div>
+
+      <nav class="nav" aria-label="Launcher navigation">
+        <a class="active" href="#home"><span class="nav-icon">⌂</span><span>Գլխավոր</span></a>
+        <a href="#servers"><span class="nav-icon">◆</span><span>Սերվերներ</span></a>
+        <a href="#news"><span class="nav-icon">▤</span><span>Նորություններ</span></a>
+        <a href="#settings"><span class="nav-icon">⚙</span><span>Կարգավորումներ</span></a>
+        <a href="#support"><span class="nav-icon">◉</span><span>Աջակցություն</span></a>
       </nav>
-      <div class="social">◉　◉　◉</div><small>Elite RP Launcher v1.0.0</small>
+
+      <div class="sidebar-bottom">
+        <div class="socials"><span>◉</span><span>VK</span><span>▶</span><span>➤</span></div>
+        <small>Elite RP Launcher v1.0.0</small>
+      </div>
     </aside>
-    <main>
-      <header><span>ELITE RP</span><div>—　□　×</div></header>
+
+    <main class="content" id="home">
+      <header class="topbar">
+        <div class="topbar-brand">ELITE RP <span>/</span> LAUNCHER</div>
+        <div class="account">
+          <div class="avatar">A</div>
+          <div><strong>Aren</strong><small><i></i> Առցանց</small></div>
+          <button aria-label="Minimize">−</button>
+          <button aria-label="Close">×</button>
+        </div>
+      </header>
+
       <section class="hero">
+        <div class="atmosphere"></div>
+        <div class="mountain mountain-back"></div>
+        <div class="mountain mountain-front"></div>
+        <div class="city">
+          <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+        </div>
+        <div class="road"></div>
+        <div class="hero-car" aria-hidden="true">
+          <div class="car-roof"></div><div class="car-body"></div><div class="car-window"></div>
+          <div class="car-light left"></div><div class="car-light right"></div>
+          <div class="wheel left"></div><div class="wheel right"></div>
+        </div>
+
         <div class="hero-copy">
           <div class="eyebrow">ՀԱՅԱՍՏԱՆԻ ՆՈՐ RP ՓՈՐՁԸ</div>
           <h1>ELITE <strong>RP</strong></h1>
-          <p>Միացեք քաղաքին։ Ստեղծեք ձեր պատմությունը։</p>
-          <div class="stats"><span>● 500+ խաղացողներ</span><span>99.9% առցանց</span><span>32 ms ping</span></div>
-          <div class="play"><input aria-label="Մականուն" placeholder="Մուտքագրեք Ձեր մականունը…"><button>▶ ԽԱՂԱԼ</button></div>
+          <p>Roleplay server</p>
+          <div class="stats">
+            <span><b>500+</b><small>խաղացողներ</small></span>
+            <span><b>99.9%</b><small>առցանց</small></span>
+            <span><b>RP</b><small>իրական կյանք</small></span>
+          </div>
         </div>
-        <div class="server"><div class="online"><i></i> Սերվերը առցանց է <b>32 ms</b></div><div class="server-row">👥 <strong>247 / 500</strong><small>խաղացողներ</small></div><div class="server-row">◉ 185.87.50.12:7777</div><select><option>Elite RP — Main Server</option></select></div>
+
+        <div class="play-panel" id="servers">
+          <div class="server-status"><span class="status-dot"></span><strong>Սերվերը առցանց է</strong><em>32 ms</em><b>▮▮▮</b></div>
+          <button class="play-button">▶ <span>ԽԱՂԱԼ</span></button>
+          <div class="server-select"><span>▣</span><strong>Elite RP (Main Server)</strong><span>⌄</span></div>
+        </div>
       </section>
-      <section class="news"><div class="section-title">Նորություններ <span>Բոլորը →</span></div><div class="cards">
-        <article><div class="thumb t1"></div><b>Նոր թարմացում v1.2.0</b><small>Նոր համակարգեր և բարելավումներ</small><em>22.10.2026</em></article>
-        <article><div class="thumb t2"></div><b>Նոր մեքենաներ</b><small>Ավելացվել են նոր մոդելներ</small><em>20.10.2026</em></article>
-        <article><div class="thumb t3"></div><b>Elite RP համայնք</b><small>Միացեք մեր համայնքին</small><em>18.10.2026</em></article>
-      </div></section>
-      <footer><span>🇦🇲 Elite RP</span><div class="progress"><b>Կատարվում է թարմացում…</b><div><i></i></div></div><button class="pause">Ⅱ Դադարեցնել</button></footer>
+
+      <section class="lower-grid">
+        <div class="updates" id="news">
+          <div class="section-heading"><h2>Նորություններ</h2><a href="#news">Բոլորը <span>→</span></a></div>
+          <article class="news-item"><div class="news-image city-image"></div><div><strong>Նոր թարմացում v1.2.0</strong><p>Նոր համակարգեր, մեքենաներ և բարելավումներ...</p><small>22.10.2026</small></div></article>
+          <article class="news-item"><div class="news-image car-image"></div><div><strong>Նոր մեքենաներ</strong><p>Ավելացվել են 15 նոր մոդելներ</p><small>20.10.2026</small></div></article>
+          <article class="news-item"><div class="news-image castle-image"></div><div><strong>Elite RP համայնք</strong><p>Միացեք մեր նոր համայնքին</p><small>18.10.2026</small></div></article>
+        </div>
+
+        <div class="download-panel">
+          <div class="download-title"><span class="download-icon">↓</span><div><strong>Կայառքն է թարմացվում...</strong><small>Ներբեռնվում են անհրաժեշտ ֆայլերը</small></div><b>86%</b></div>
+          <div class="progress-track"><span></span></div>
+          <div class="download-meta"><span>1.8 GB / 2.1 GB</span><span>12.4 MB/s</span><button>Ⅱ Դադարեցնել</button></div>
+        </div>
+      </section>
     </main>
   </div>
 </body>
