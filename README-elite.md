@@ -1,0 +1,1 @@
+Elite RP launcher redesign work is tracked in PR #39.
