@@ -1,0 +1,1 @@
+Temporary redesign notes; see PR #39.
