@@ -11,30 +11,33 @@ export function renderServerStatus(status: ServerStatus | null): void {
   const badge = document.querySelector<HTMLElement>('#server-status');
   const players = document.querySelector<HTMLElement>('#player-count');
   const latency = document.querySelector<HTMLElement>('#latency');
+  const latencyCopy = document.querySelector<HTMLElement>('#latency-copy');
   if (!badge || !players || !latency) return;
 
   if (!status) {
-    badge.textContent = 'ՍԵՐՎԵՐԸ ԱՆՀԱՍԱՆԵԼԻ Է';
+    badge.textContent = 'Սերվերը անհասանելի է';
     badge.dataset.state = 'offline';
     players.textContent = '—';
-    latency.textContent = 'Կապ չկա';
+    latency.textContent = '—';
+    if (latencyCopy) latencyCopy.textContent = 'Կապ չկա';
     return;
   }
 
-  badge.textContent = status.online ? 'ՍԵՐՎԵՐԸ ԱՌՑԱՆՑ Է' : 'ՍԵՐՎԵՐԸ ՕՖԼԱՅՆ Է';
+  badge.textContent = status.online ? 'Սերվերը առցանց է' : 'Սերվերը օֆլայն է';
   badge.dataset.state = status.online ? 'online' : 'offline';
   players.textContent = `${status.players} / ${status.maxPlayers}`;
-  latency.textContent = status.latencyMs == null ? '—' : `${status.latencyMs} ms`;
+  const ping = status.latencyMs == null ? '—' : `${status.latencyMs} ms`;
+  latency.textContent = ping;
+  if (latencyCopy) latencyCopy.textContent = ping;
 }
 
 export function renderNews(items: { title: string; summary: string; publishedAt: string }[]): void {
   const root = document.querySelector<HTMLElement>('#news-list');
   if (!root) return;
-  root.innerHTML = '';
-  for (const item of items) {
+  root.innerHTML = '<div class="section-label"><span>NEWS</span><strong>Նորություններ</strong></div>';
+  for (const [index, item] of items.slice(0, 3).entries()) {
     const article = document.createElement('article');
-    article.className = 'news-card';
-    article.innerHTML = `<span>${escapeHtml(item.publishedAt)}</span><h3>${escapeHtml(item.title)}</h3><p>${escapeHtml(item.summary)}</p>`;
+    article.innerHTML = `<div class="news-index">${String(index + 1).padStart(2, '0')}</div><div><strong>${escapeHtml(item.title)}</strong><small>${escapeHtml(item.summary)}</small></div>`;
     root.appendChild(article);
   }
 }
