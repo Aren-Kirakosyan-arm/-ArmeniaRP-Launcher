@@ -1,6 +1,6 @@
-const fs = require('fs');
-const path = require('path');
-const { describe, test, expect } = require('vitest');
+import fs from 'node:fs';
+import path from 'node:path';
+import { describe, test, expect } from 'vitest';
 
 describe('Elite RP launcher UI', () => {
   const root = path.resolve(__dirname, '..');
