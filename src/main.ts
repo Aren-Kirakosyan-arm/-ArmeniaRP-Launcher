@@ -4,9 +4,9 @@ import { launchGame, loadSettings, saveSettings } from './settings';
 import { renderNews, renderServerStatus, validateNickname } from './ui';
 
 const fallbackNews = [
-  { id: 1, title: 'ArmeniaRP Launcher', summary: 'Բարի գալուստ ArmeniaRP-ի պաշտոնական launcher։ Պատրաստվեք նոր արկածների։', publishedAt: '22.10.2026' },
-  { id: 2, title: 'Սերվերի միացում', summary: 'Մուտքագրեք Ձեր մականունը, ընտրեք խաղի ճանապարհը և սեղմեք «ԽԱՂԱԼ»։', publishedAt: '22.10.2026' },
-  { id: 3, title: 'Նոր թարմացումներ', summary: 'Ավտոմատ թարմացման համակարգը պատրաստվում է և շուտով հասանելի կլինի։', publishedAt: '22.10.2026' },
+  { id: 1, title: 'Elite RP Launcher', summary: 'Բարի գալուստ Elite RP-ի պաշտոնական launcher։ Պատրաստվեք նոր արկածների։', publishedAt: '23.10.2026' },
+  { id: 2, title: 'Սերվերի միացում', summary: 'Մուտքագրեք Ձեր մականունը, ընտրեք խաղի ճանապարհը և սեղմեք «ԽԱՂԱԼ»։', publishedAt: '23.10.2026' },
+  { id: 3, title: 'Նոր թարմացումներ', summary: 'Ավտոմատ թարմացման համակարգը պատրաստվում է և շուտով հասանելի կլինի։', publishedAt: '23.10.2026' },
 ];
 
 const nicknameInput = document.querySelector<HTMLInputElement>('#nickname')!;
@@ -25,7 +25,7 @@ async function refresh() {
   try {
     const status = await fetchServerStatus();
     renderServerStatus(status);
-    if (status.version) document.title = `ArmeniaRP Launcher · ${status.version}`;
+    if (status.version) document.title = `Elite RP Launcher · ${status.version}`;
   } catch {
     renderServerStatus(null);
   }
@@ -46,6 +46,9 @@ nicknameInput.value = settings.nickname;
   gamePath.value = loadSettings().executablePath;
   settingsDialog.showModal();
 });
+
+document.querySelector('#settings-close')?.addEventListener('click', () => settingsDialog.close());
+document.querySelector('#settings-cancel')?.addEventListener('click', () => settingsDialog.close());
 
 document.querySelector('#refresh-button')?.addEventListener('click', () => void refresh());
 
