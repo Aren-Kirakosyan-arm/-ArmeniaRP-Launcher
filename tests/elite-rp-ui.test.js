@@ -4,7 +4,7 @@ const path = require('path');
 describe('Elite RP launcher UI', () => {
   const root = path.resolve(__dirname, '..');
   const html = fs.readFileSync(path.join(root, 'src', 'index.html'), 'utf8');
-  const css = fs.readFileSync(path.join(root, 'src', 'styles.css'), 'utf8');
+  const css = fs.readFileSync(path.join(root, 'src', 'styles-elite-rp.css'), 'utf8');
 
   test('uses Elite RP branding and Armenian play action', () => {
     expect(html).toContain('ELITE RP');
