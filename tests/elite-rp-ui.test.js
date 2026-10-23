@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const { describe, test, expect } = require('vitest');
 
 describe('Elite RP launcher UI', () => {
   const root = path.resolve(__dirname, '..');
