@@ -1,8 +1,8 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "ArmeniaRP Launcher",
+  "productName": "Elite RP",
   "version": "0.1.0",
-  "identifier": "am.armeniarp.launcher",
+  "identifier": "am.eliterp.launcher",
   "build": {
     "beforeDevCommand": "npm run dev",
     "devUrl": "http://localhost:1420",
@@ -11,13 +11,14 @@
   "app": {
     "windows": [
       {
-        "title": "ArmeniaRP Launcher",
+        "title": "Elite RP",
         "width": 1160,
         "height": 760,
         "minWidth": 640,
         "minHeight": 560,
         "resizable": true,
-        "fullscreen": false
+        "fullscreen": false,
+        "decorations": false
       }
     ],
     "security": { "csp": null }
