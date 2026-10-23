@@ -1,0 +1,1 @@
+UI test fixtures for the Elite RP launcher redesign.
