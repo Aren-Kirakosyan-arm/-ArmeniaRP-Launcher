@@ -2,16 +2,16 @@ import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
-describe('ArmeniaRP Armenian launcher design', () => {
+describe('Elite RP launcher design', () => {
   const html = readFileSync(resolve(process.cwd(), 'index.html'), 'utf8');
   const css = readFileSync(resolve(process.cwd(), 'src/styles.css'), 'utf8');
 
-  it('uses Armenian primary UI copy and branded logo markup', () => {
+  it('uses Armenian primary UI copy and Elite RP branding', () => {
     expect(html).toContain('ԽԱՂԱԼ');
     expect(html).toContain('Մուտքագրեք Ձեր մականունը');
     expect(html).toContain('Կարգավորումներ');
     expect(html).toContain('Նորություններ');
-    expect(html).toContain('armenia-logo');
+    expect(html).toContain('ELITE RP');
   });
 
   it('contains Armenian visual identity and responsive premium styling', () => {
